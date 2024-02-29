@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+double computeArea(double length, double width) {
+    return length * width;
+}
+
 int main() {
     double length, width, area;
 
@@ -9,7 +13,7 @@ int main() {
     printf("Enter the width of the rectangle: ");
     scanf("%lf", &width);
 
-    area = length * width;
+    area = computeArea(length, width);
 
     printf("The area of the rectangle is: %.2lf\n", area);
 
