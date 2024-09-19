@@ -18,8 +18,8 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "GitHub.copilot"
-        
+        "GitHub.copilot",
+        	"ms-vscode.cpptools-extension-pack"        
       ],
       "settings": {
         "emmet.includeLanguages": {
