@@ -76,87 +76,41 @@ double calculateGPA(const vector<int> &marks)
 // Function to check if a year is a leap year
 bool isLeapYear(int year)
 {
-    if (year % 4 == 0)
-    {
-        if (year % 100 == 0)
-        {
-            if (year % 400 == 0)
-                return true;
-            else
-                return false;
-        }
-        else
-            return true;
-    }
-    return false;
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
 
-// Function to validate the day based on the month and year
 bool isValidDate(int day, int month, int year)
 {
-    // Days in each month
-    int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-    // Adjust for leap years in February
-    if (isLeapYear(year))
-        daysInMonth[1] = 29;
-
     if (month < 1 || month > 12)
-        return false; // Invalid month
-    if (day < 1 || day > daysInMonth[month - 1])
-        return false; // Invalid day
-    return true;
+        return false;
+    int daysInMonth[] = {31, 28 + isLeapYear(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    return day > 0 && day <= daysInMonth[month - 1];
 }
 
 // Function to calculate age
 void calculateAge()
 {
     string dob;
-    cout << "Enter your date of birth (DD/MM/YYYY): ";
+    cout << "Enter your date of birth (dd/mm/yyyy): ";
     cin >> dob;
-
-    // Parse the date
-    int day, month, year;
-    sscanf(dob.c_str(), "%d/%d/%d", &day, &month, &year);
-
-    // Validate the date
+    if (dob.length() != 10 || dob[2] != '/' || dob[5] != '/')
+    {
+        cout << "Invalid format. Please use dd/mm/yyyy." << endl;
+        return 1;
+    }
+    int day = stoi(dob.substr(0, 2)), month = stoi(dob.substr(3, 2)), year = stoi(dob.substr(6, 4));
     if (!isValidDate(day, month, year))
     {
-        cout << "Invalid date. Please enter a valid date (DD/MM/YYYY)." << endl;
-        return;
+        cout << "Invalid date. Please try again." << endl;
+        return 1;
     }
 
-    // Get current date
-    time_t now = time(0);
-    tm *currentTime = localtime(&now);
-    int currentYear = currentTime->tm_year + 1900;
-    int currentMonth = currentTime->tm_mon + 1;
-    int currentDay = currentTime->tm_mday;
-
-    // Calculate the age
-    int ageYears = currentYear - year;
-    int ageMonths = currentMonth - month;
-    int ageDays = currentDay - day;
-
-    // Adjust age based on days
-    if (ageDays < 0)
-    {
-        ageMonths--;
-        // Correct for negative days based on the previous month
-        int daysInPreviousMonth = (month == 1) ? 31 : (isLeapYear(year) && month == 3) ? 29
-                                                                                       : 28; // Handle February
-        ageDays += daysInPreviousMonth;                                                      // Adjust day difference
-    }
-
-    // Adjust age based on months
-    if (ageMonths < 0)
-    {
-        ageYears--;
-        ageMonths += 12;
-    }
-
-    // Output final age in years and remaining days
-    cout << "You are " << ageYears << " years and " << ageDays << " days old." << endl;
+    time_t t = time(0);
+    tm *now = localtime(&t);
+    int ageYears = now->tm_year + 1900 - year - (now->tm_mon + 1 < month || (now->tm_mon + 1 == month && now->tm_mday < day));
+    tm lastBirthday = {0, 0, 0, day, month - 1, (now->tm_mon + 1 > month || (now->tm_mon + 1 == month && now->tm_mday >= day)) ? now->tm_year : now->tm_year - 1};
+    double ageDays = difftime(mktime(now), mktime(&lastBirthday)) / (60 * 60 * 24);
+    cout << "You are " << ageYears << " years and " << static_cast<int>(ageDays) << " days old." << endl;
 }
 // Main function
 int main()
