@@ -73,6 +73,7 @@ double calculateGPA(const vector<int> &marks)
     // Calculate the GPA by dividing the total grade points by the number of subjects
     return totalGradePoints / marks.size();
 }
+
 // Function to check if a year is a leap year
 bool isLeapYear(int year)
 {
@@ -96,22 +97,42 @@ void calculateAge()
     if (dob.length() != 10 || dob[2] != '/' || dob[5] != '/')
     {
         cout << "Invalid format. Please use dd/mm/yyyy." << endl;
-        return 1;
+        return;
     }
-    int day = stoi(dob.substr(0, 2)), month = stoi(dob.substr(3, 2)), year = stoi(dob.substr(6, 4));
+
+    int day = stoi(dob.substr(0, 2));
+    int month = stoi(dob.substr(3, 2));
+    int year = stoi(dob.substr(6, 4));
+
     if (!isValidDate(day, month, year))
     {
         cout << "Invalid date. Please try again." << endl;
-        return 1;
+        return;
     }
 
+    // Get current date
     time_t t = time(0);
     tm *now = localtime(&t);
-    int ageYears = now->tm_year + 1900 - year - (now->tm_mon + 1 < month || (now->tm_mon + 1 == month && now->tm_mday < day));
-    tm lastBirthday = {0, 0, 0, day, month - 1, (now->tm_mon + 1 > month || (now->tm_mon + 1 == month && now->tm_mday >= day)) ? now->tm_year : now->tm_year - 1};
-    double ageDays = difftime(mktime(now), mktime(&lastBirthday)) / (60 * 60 * 24);
-    cout << "You are " << ageYears << " years and " << static_cast<int>(ageDays) << " days old." << endl;
+
+    // Calculate age in years
+    int ageYears = now->tm_year + 1900 - year;
+    if (now->tm_mon + 1 < month || (now->tm_mon + 1 == month && now->tm_mday < day))
+    {
+        ageYears--;
+    }
+
+    // Calculate days since last birthday
+    tm lastBirthday = {0};
+    lastBirthday.tm_year = (now->tm_mon + 1 > month || (now->tm_mon + 1 == month && now->tm_mday >= day)) ? now->tm_year : now->tm_year - 1;
+    lastBirthday.tm_mon = month - 1; // tm_mon is 0-based
+    lastBirthday.tm_mday = day;
+
+    double secondsSinceBirthday = difftime(mktime(now), mktime(&lastBirthday));
+    int ageDays = secondsSinceBirthday / (60 * 60 * 24);
+
+    cout << "You are " << ageYears << " years and " << ageDays << " days old." << endl;
 }
+
 // Main function
 int main()
 {
@@ -172,7 +193,6 @@ int main()
         cout << "Your GPA is: " << gpa << endl;
 
         // Age Calculation
-
         calculateAge();
 
         // Continue or terminate the program
