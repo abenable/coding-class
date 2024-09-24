@@ -137,7 +137,7 @@ void calculateAge()
 int main()
 {
     string fullName, inputPassword;
-    string courseCode = "BELE";
+    string courseCode = "CMP2103";
     int numberOfSubjects;
     char continueProgram;
 
@@ -169,6 +169,9 @@ int main()
         return 1;
     }
 
+    // Age Calculation
+    calculateAge();
+
     // Capturing Marks and GPA Calculation
     do
     {
@@ -191,9 +194,6 @@ int main()
 
         double gpa = calculateGPA(marks);
         cout << "Your GPA is: " << gpa << endl;
-
-        // Age Calculation
-        calculateAge();
 
         // Continue or terminate the program
         cout << "Do you want to continue? (y/n): ";
